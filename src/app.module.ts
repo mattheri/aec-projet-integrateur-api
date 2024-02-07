@@ -10,6 +10,8 @@ import { ActivitySectorsModule } from './activity-sectors/activity-sectors.modul
 import { ProvincesModule } from './provinces/provinces.module';
 
 import databaseConfig from './database/config';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -26,6 +28,12 @@ import databaseConfig from './database/config';
       },
       inject: [ConfigService],
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 1000,
+        limit: 3,
+      },
+    ]),
     InternshipRequestsModule,
     InternshipOffersModule,
     CandidatesModule,
@@ -33,6 +41,12 @@ import databaseConfig from './database/config';
     InternshipTypesModule,
     ActivitySectorsModule,
     ProvincesModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
