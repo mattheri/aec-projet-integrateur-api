@@ -4,6 +4,7 @@ import { UpdateCandidateDto } from './dto/update-candidate.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Candidate } from './schema/candidates.schema';
 import { Model } from 'mongoose';
+import { populatePaths } from './candidate.constants';
 
 @Injectable()
 export class CandidatesService {
@@ -11,22 +12,25 @@ export class CandidatesService {
     @InjectModel(Candidate.name) private candidateModel: Model<Candidate>,
   ) {}
 
-  create(createCandidateDto: CreateCandidateDto) {
+  async create(createCandidateDto: CreateCandidateDto) {
     const createdCandidate = new this.candidateModel(createCandidateDto);
-    return createdCandidate.save();
+    const created = await createdCandidate.save();
+
+    return created.populate(populatePaths);
   }
 
   findAll() {
-    return this.candidateModel.find().exec();
+    return this.candidateModel.find().populate(populatePaths).exec();
   }
 
   findOne(id: string) {
-    return this.candidateModel.findById(id).exec();
+    return this.candidateModel.findById(id).populate(populatePaths).exec();
   }
 
   update(id: string, updateCandidateDto: UpdateCandidateDto) {
     return this.candidateModel
       .findByIdAndUpdate(id, updateCandidateDto, { new: true })
+      .populate(populatePaths)
       .exec();
   }
 

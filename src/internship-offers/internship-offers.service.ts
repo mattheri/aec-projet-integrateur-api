@@ -4,6 +4,7 @@ import { UpdateInternshipOfferDto } from './dto/update-internship-offer.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { InternshipOffer } from './schema/internship-offers.schema';
 import { Model } from 'mongoose';
+import { populatePaths } from './internship-offers.constants';
 
 @Injectable()
 export class InternshipOffersService {
@@ -12,24 +13,29 @@ export class InternshipOffersService {
     private internshipOfferModel: Model<InternshipOffer>,
   ) {}
 
-  create(createInternshipOfferDto: CreateInternshipOfferDto) {
+  async create(createInternshipOfferDto: CreateInternshipOfferDto) {
     const createdInternshipOffer = new this.internshipOfferModel(
       createInternshipOfferDto,
     );
-    return createdInternshipOffer.save();
+    const created = await createdInternshipOffer.save();
+    return created.populate(populatePaths);
   }
 
   findAll() {
-    return this.internshipOfferModel.find().exec();
+    return this.internshipOfferModel.find().populate(populatePaths).exec();
   }
 
   findOne(id: string) {
-    return this.internshipOfferModel.findById(id).exec();
+    return this.internshipOfferModel
+      .findById(id)
+      .populate(populatePaths)
+      .exec();
   }
 
   update(id: string, updateInternshipOfferDto: UpdateInternshipOfferDto) {
     return this.internshipOfferModel
       .findByIdAndUpdate(id, updateInternshipOfferDto, { new: true })
+      .populate(populatePaths)
       .exec();
   }
 

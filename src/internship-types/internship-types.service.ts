@@ -4,6 +4,7 @@ import { UpdateInternshipTypeDto } from './dto/update-internship-type.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { InternshipType } from './schema/internship-types.schema';
 import { Model } from 'mongoose';
+import { InternshipTypeEnum } from './internship-types.interface';
 
 @Injectable()
 export class InternshipTypesService {
@@ -45,5 +46,15 @@ export class InternshipTypesService {
 
   remove(id: string) {
     return this.internshipTypeModel.findByIdAndDelete(id).exec();
+  }
+
+  populateWithDefaultValues() {
+    const InternshipTypes = Object.values(InternshipTypeEnum);
+
+    return Promise.allSettled(
+      InternshipTypes.map((internshipType) =>
+        this.create({ value: internshipType }),
+      ),
+    );
   }
 }

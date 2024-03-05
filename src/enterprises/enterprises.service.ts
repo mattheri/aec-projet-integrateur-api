@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Enterprise } from './schema/enterprises.schema';
 import { Model } from 'mongoose';
 import { ActivitySectorsService } from 'src/activity-sectors/activity-sectors.service';
+import { populatePaths } from './enterprise.constants';
 
 @Injectable()
 export class EnterprisesService {
@@ -29,20 +30,23 @@ export class EnterprisesService {
       ...createEnterpriseDto,
       activitySector,
     });
-    return createdEnterprise.save();
+    const savedEnterprise = await createdEnterprise.save();
+
+    return savedEnterprise.populate(populatePaths);
   }
 
   findAll() {
-    return this.enterpriseModel.find().exec();
+    return this.enterpriseModel.find().populate(populatePaths).exec();
   }
 
   findOne(id: string) {
-    return this.enterpriseModel.findById(id).exec();
+    return this.enterpriseModel.findById(id).populate(populatePaths).exec();
   }
 
   update(id: string, updateEnterpriseDto: UpdateEnterpriseDto) {
     return this.enterpriseModel
       .findByIdAndUpdate(id, updateEnterpriseDto, { new: true })
+      .populate(populatePaths)
       .exec();
   }
 

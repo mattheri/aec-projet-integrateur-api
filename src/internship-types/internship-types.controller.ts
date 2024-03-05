@@ -26,6 +26,12 @@ export class InternshipTypesController {
     return this.internshipTypesService.create(createInternshipTypeDto);
   }
 
+  @Post('populate')
+  @ApiResponse({ status: HttpStatus.OK })
+  populateWithDefaultValues() {
+    return this.internshipTypesService.populateWithDefaultValues();
+  }
+
   @Get()
   @ApiResponse({ type: [InternshipType], status: HttpStatus.OK })
   findAll() {

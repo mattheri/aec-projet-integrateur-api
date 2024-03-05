@@ -1,0 +1,38 @@
+{
+  "title": "Hello World",
+  "description": "lorem ipsum",
+  "enterprise": {
+    "_id": "65c2781fb3a8ad1d7ccc91fa",
+    "name": "MobX",
+    "address": "111 Rue Larue",
+    "postalCode": "H0H0H0",
+    "city": "Montreal",
+    "province": {
+      "_id": "65c255fb7e4d2a499b409ca0",
+      "value": "QUEBEC"
+    },
+    "phone": "514-555-5555",
+    "email": "suchemail@gmail.com",
+    "description": "lorem ipsum",
+    "activitySector": {
+      "_id": "65c19fcff568a815fab14b2a",
+      "value": "Finance"
+    },
+    "website": "www.google.com"
+  },
+  "startDate": "2024-03-04",
+  "endDate": "2024-03-04",
+  "weeklyWorkHours": 0,
+  "salary": 0,
+  "province": {
+    "_id": "65c255fb7e4d2a499b409ca0",
+    "value": "QUEBEC"
+  },
+  "requiredSkills": ["string"],
+  "internshipType": {
+    "_id": "65c25bccac3d1db83f69041e",
+    "value": "FULL"
+  },
+  "paid": "DISCRETIONARY",
+  "isActive": true
+}

@@ -65,10 +65,12 @@ export class InternshipOffer {
   @ApiProperty()
   @ValidateNested()
   internshipType: InternshipType;
-  @ApiProperty()
+  @ApiProperty({
+    enum: InternshipOfferPaidStatus,
+  })
   @IsOptional()
   @IsEnum(InternshipOfferPaidStatus)
-  paid?: string;
+  paid: InternshipOfferPaidStatus;
   @ApiProperty()
   @IsBoolean()
   isActive: boolean;

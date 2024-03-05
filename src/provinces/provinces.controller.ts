@@ -24,6 +24,12 @@ export class ProvincesController {
     return this.provincesService.create(createProvinceDto);
   }
 
+  @Post('populate')
+  @ApiResponse({ status: HttpStatus.OK })
+  populateWithDefaultValues() {
+    return this.provincesService.populateWithDefaultValues();
+  }
+
   @Get()
   @ApiResponse({ status: HttpStatus.OK, type: [Province] })
   findAll() {

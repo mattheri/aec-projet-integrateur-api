@@ -4,6 +4,7 @@ import { UpdateProvinceDto } from './dto/update-province.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Province } from './schema/provinces.schema';
 import { Model } from 'mongoose';
+import { ProvinceEnum } from './provinces.interfaces';
 
 @Injectable()
 export class ProvincesService {
@@ -42,5 +43,13 @@ export class ProvincesService {
 
   remove(id: string) {
     return this.provinceModel.findByIdAndDelete(id).exec();
+  }
+
+  populateWithDefaultValues() {
+    const provinces = Object.values(ProvinceEnum);
+
+    return Promise.allSettled(
+      provinces.map((province) => this.create({ value: province })),
+    );
   }
 }
