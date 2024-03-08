@@ -5,11 +5,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Candidate } from './schema/candidates.schema';
 import { Model } from 'mongoose';
 import { populatePaths } from './candidate.constants';
+import { CandidateQueryParamsDto } from './dto/candidate-query-params.dto';
+import { QueryParamsService } from 'src/query-params/query-params.service';
 
 @Injectable()
 export class CandidatesService {
   constructor(
     @InjectModel(Candidate.name) private candidateModel: Model<Candidate>,
+    private readonly queryParams: QueryParamsService<Model<Candidate>>,
   ) {}
 
   async create(createCandidateDto: CreateCandidateDto) {
@@ -19,7 +22,21 @@ export class CandidatesService {
     return created.populate(populatePaths);
   }
 
-  findAll() {
+  findAll(query: CandidateQueryParamsDto) {
+    if (this.queryParams.queryIsNotEmpty(query)) {
+      return this.queryParams.execute(this.candidateModel, query, {
+        paths: {
+          skills: {
+            path: 'skills',
+            type: 'Array',
+          },
+          province: 'province.value',
+        },
+        populate: true,
+        populatePaths,
+      });
+    }
+
     return this.candidateModel.find().populate(populatePaths).exec();
   }
 
@@ -36,5 +53,28 @@ export class CandidatesService {
 
   remove(id: string) {
     return this.candidateModel.findByIdAndDelete(id).exec();
+  }
+
+  async count(query: CandidateQueryParamsDto) {
+    if (this.queryParams.queryIsNotEmpty(query)) {
+      const documentsFound = await this.queryParams.execute(
+        this.candidateModel,
+        query,
+        {
+          paths: {
+            skills: {
+              path: 'skills',
+              type: 'Array',
+            },
+            province: 'province.value',
+          },
+          populate: false,
+        },
+      );
+
+      return documentsFound.length;
+    }
+
+    return this.candidateModel.countDocuments().exec();
   }
 }

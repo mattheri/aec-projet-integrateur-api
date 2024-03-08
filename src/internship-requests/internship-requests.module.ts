@@ -6,12 +6,14 @@ import {
   InternshipRequest,
   InternshipRequestSchema,
 } from './schema/internship-requests.schema';
+import { QueryParamsModule } from 'src/query-params/query-params.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: InternshipRequest.name, schema: InternshipRequestSchema },
     ]),
+    QueryParamsModule,
   ],
   controllers: [InternshipRequestsController],
   providers: [InternshipRequestsService],

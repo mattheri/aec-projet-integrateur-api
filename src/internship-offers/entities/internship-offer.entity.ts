@@ -73,5 +73,12 @@ export class InternshipOffer {
   paid: InternshipOfferPaidStatus;
   @ApiProperty()
   @IsBoolean()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value === 'true';
+    }
+
+    return value;
+  })
   isActive: boolean;
 }

@@ -5,12 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { InternshipRequest } from './schema/internship-requests.schema';
 import { Model } from 'mongoose';
 import { populatePaths } from './internship-requests.constants';
+import { QueryParamsService } from 'src/query-params/query-params.service';
+import { InternshipRequestsQueryParams } from './dto/internship-requests-query-params.dto';
 
 @Injectable()
 export class InternshipRequestsService {
   constructor(
     @InjectModel(InternshipRequest.name)
     private internshipRequestModel: Model<InternshipRequest>,
+    private readonly queryParams: QueryParamsService<Model<InternshipRequest>>,
   ) {}
 
   async create(createInternshipRequestDto: CreateInternshipRequestDto) {
@@ -21,7 +24,30 @@ export class InternshipRequestsService {
     return created.populate(populatePaths);
   }
 
-  findAll() {
+  async findAll(query: InternshipRequestsQueryParams) {
+    if (Object.keys(query).length) {
+      return await this.queryParams.execute(
+        this.internshipRequestModel,
+        query,
+        {
+          paths: {
+            province: 'province.value',
+            candidate: 'candidate._id',
+            email: 'candidate.email',
+            firstName: 'candidate.firstName',
+            lastName: 'candidate.lastName',
+            internshipType: 'internshipType.value',
+            skills: {
+              path: 'candidate.skills',
+              type: 'Array',
+            },
+          },
+          populate: true,
+          populatePaths,
+        },
+      );
+    }
+
     return this.internshipRequestModel.find().populate(populatePaths).exec();
   }
 
@@ -41,5 +67,33 @@ export class InternshipRequestsService {
 
   remove(id: string) {
     return this.internshipRequestModel.findByIdAndDelete(id).exec();
+  }
+
+  async count(query: InternshipRequestsQueryParams) {
+    if (Object.keys(query).length) {
+      const documentsFound = await this.queryParams.execute(
+        this.internshipRequestModel,
+        query,
+        {
+          paths: {
+            province: 'province.value',
+            candidate: 'candidate._id',
+            email: 'candidate.email',
+            firstName: 'candidate.firstName',
+            lastName: 'candidate.lastName',
+            internshipType: 'internshipType.value',
+            skills: {
+              path: 'candidate.skills',
+              type: 'Array',
+            },
+          },
+          populate: false,
+        },
+      );
+
+      return documentsFound.length;
+    }
+
+    return this.internshipRequestModel.countDocuments().exec();
   }
 }

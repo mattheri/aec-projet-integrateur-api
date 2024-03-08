@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CandidatesService } from './candidates.service';
 import { CreateCandidateDto } from './dto/create-candidate.dto';
 import { UpdateCandidateDto } from './dto/update-candidate.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { Candidate } from './entities/candidate.entity';
+import { CandidateQueryParamsDto } from './dto/candidate-query-params.dto';
 
 @Controller('candidates')
 export class CandidatesController {
@@ -26,8 +28,14 @@ export class CandidatesController {
 
   @Get()
   @ApiResponse({ status: HttpStatus.OK, type: [Candidate] })
-  findAll() {
-    return this.candidatesService.findAll();
+  findAll(@Query() query: CandidateQueryParamsDto) {
+    return this.candidatesService.findAll(query);
+  }
+
+  @Get('count')
+  @ApiResponse({ status: HttpStatus.OK, type: Number })
+  count(@Query() query: CandidateQueryParamsDto) {
+    return this.candidatesService.count(query);
   }
 
   @Get(':id')

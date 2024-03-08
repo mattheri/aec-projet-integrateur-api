@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { InternshipRequestsService } from './internship-requests.service';
 import { CreateInternshipRequestDto } from './dto/create-internship-request.dto';
 import { UpdateInternshipRequestDto } from './dto/update-internship-request.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { InternshipRequestResponseDto } from './dto/internship-request-response.dto';
+import { InternshipRequestsQueryParams } from './dto/internship-requests-query-params.dto';
 
 @Controller('internship-requests')
 export class InternshipRequestsController {
@@ -31,8 +33,14 @@ export class InternshipRequestsController {
 
   @Get()
   @ApiResponse({ status: HttpStatus.OK, type: [InternshipRequestResponseDto] })
-  findAll() {
-    return this.internshipRequestsService.findAll();
+  findAll(@Query() query: InternshipRequestsQueryParams) {
+    return this.internshipRequestsService.findAll(query);
+  }
+
+  @Get('count')
+  @ApiResponse({ status: HttpStatus.OK, type: Number })
+  count(@Query() query: InternshipRequestsQueryParams) {
+    return this.internshipRequestsService.count(query);
   }
 
   @Get(':id')

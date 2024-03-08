@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { EnterprisesService } from './enterprises.service';
 import { CreateEnterpriseDto } from './dto/create-enterprise.dto';
 import { UpdateEnterpriseDto } from './dto/update-enterprise.dto';
-import { ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 import { EnterpriseResponseDto } from './dto/enterprise-reponse.dto';
+import { EnterpriseQueryParamsDto } from './dto/enterprise-query-params.dto';
 
 @Controller('enterprises')
 export class EnterprisesController {
@@ -29,8 +31,14 @@ export class EnterprisesController {
 
   @Get()
   @ApiResponse({ status: HttpStatus.OK, type: [EnterpriseResponseDto] })
-  findAll() {
-    return this.enterprisesService.findAll();
+  findAll(@Query() query: EnterpriseQueryParamsDto) {
+    return this.enterprisesService.findAll(query);
+  }
+
+  @Get('count')
+  @ApiResponse({ status: HttpStatus.OK, type: Number })
+  count(@Query() query: EnterpriseQueryParamsDto) {
+    return this.enterprisesService.count(query);
   }
 
   @Get(':id')

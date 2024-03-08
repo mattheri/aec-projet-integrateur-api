@@ -5,12 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { InternshipOffer } from './schema/internship-offers.schema';
 import { Model } from 'mongoose';
 import { populatePaths } from './internship-offers.constants';
+import { QueryParamsService } from 'src/query-params/query-params.service';
+import { InternshipOffersQueryParamsDto } from './dto/internship-offers-query-params.dto';
 
 @Injectable()
 export class InternshipOffersService {
   constructor(
     @InjectModel(InternshipOffer.name)
     private internshipOfferModel: Model<InternshipOffer>,
+    private readonly queryParams: QueryParamsService<Model<InternshipOffer>>,
   ) {}
 
   async create(createInternshipOfferDto: CreateInternshipOfferDto) {
@@ -21,7 +24,20 @@ export class InternshipOffersService {
     return created.populate(populatePaths);
   }
 
-  findAll() {
+  async findAll(query: InternshipOffersQueryParamsDto) {
+    if (this.queryParams.queryIsNotEmpty(query)) {
+      return this.queryParams.execute(this.internshipOfferModel, query, {
+        paths: {
+          enterprise: 'enterprise._id',
+          enterpriseName: 'enterprise.name',
+          internshipType: 'internshipType.value',
+          province: 'province.value',
+        },
+        populate: true,
+        populatePaths,
+      });
+    }
+
     return this.internshipOfferModel.find().populate(populatePaths).exec();
   }
 
@@ -41,5 +57,27 @@ export class InternshipOffersService {
 
   remove(id: string) {
     return this.internshipOfferModel.findByIdAndDelete(id).exec();
+  }
+
+  async count(query: InternshipOffersQueryParamsDto) {
+    if (this.queryParams.queryIsNotEmpty(query)) {
+      const documentsFound = await this.queryParams.execute(
+        this.internshipOfferModel,
+        query,
+        {
+          paths: {
+            enterprise: 'enterprise._id',
+            enterpriseName: 'enterprise.name',
+            internshipType: 'internshipType.value',
+            province: 'province.value',
+          },
+          populate: false,
+        },
+      );
+
+      return documentsFound.length;
+    }
+
+    return this.internshipOfferModel.countDocuments().exec();
   }
 }
