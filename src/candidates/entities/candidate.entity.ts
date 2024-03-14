@@ -9,6 +9,7 @@ import {
 import { Province } from 'src/provinces/entities/province.entity';
 
 export class Candidate {
+  @ApiProperty()
   _id: string;
   @ApiProperty()
   @IsString()
